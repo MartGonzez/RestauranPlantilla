@@ -3,57 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carta Digital & Pedidos | Demo Restaurante</title>
+  <title>Carta Digital & Pedidos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-stone-50 text-stone-800 pb-28">
+<body id="app-body" class="bg-stone-50 text-stone-800 pb-28 transition-colors duration-300">
 
-  <!-- Header / Portada del Local -->
-  <header class="relative bg-stone-900 text-white">
-    <div class="h-44 sm:h-56 w-full overflow-hidden opacity-60">
-      <img id="banner-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80" alt="Portada Restaurante" class="w-full h-full object-cover">
-    </div>
-    <div class="max-w-3xl mx-auto px-4 pb-6 -mt-12 relative z-10">
-      <div class="bg-white text-stone-900 rounded-2xl shadow-lg p-5 border border-stone-100">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <span id="badge-estado" class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 mb-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Abierto ahora
-            </span>
-            <h1 id="local-nombre" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Sabores del Barrio</h1>
-            <p id="local-desc" class="text-sm text-stone-500 mt-1">Comida casera, hamburguesas artesanales y menús ejecutivos.</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-stone-100 text-xs text-stone-600">
-          <span><i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> <span id="local-direccion">Av. Principal 1234, Chile</span></span>
-          <span><i class="fa-regular fa-clock text-amber-600 mr-1"></i> <span id="local-horario">Lun - Sáb: 12:00 a 22:30 hrs</span></span>
-        </div>
+  <!-- Barra de Control Demo (Para cambiar entre Versión 1, 2, 3 y abrir Cocina) -->
+  <div class="bg-neutral-950 text-white text-xs py-2 px-4 border-b border-neutral-800">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5">
+        <span class="text-neutral-400 font-semibold mr-1">Diseño:</span>
+        <button onclick="cambiarVersion(1)" id="btn-v1" class="px-2.5 py-1 rounded font-bold transition">V1 Clásico</button>
+        <button onclick="cambiarVersion(2)" id="btn-v2" class="px-2.5 py-1 rounded font-bold transition">V2 Dark Burger</button>
+        <button onclick="cambiarVersion(3)" id="btn-v3" class="px-2.5 py-1 rounded font-bold transition">V3 Minimal Lista</button>
       </div>
+      <a href="pedidos.html" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 rounded transition">
+        <i class="fa-solid fa-fire-burner"></i> Abrir Pantalla Pedidos
+      </a>
     </div>
-  </header>
+  </div>
+
+  <!-- Contenedor dinámico del Header según la versión -->
+  <div id="header-container"></div>
 
   <!-- Filtro de Categorías Sticky -->
-  <nav class="sticky top-0 z-30 bg-stone-50/95 backdrop-blur border-b border-stone-200">
-    <div id="categorias-container" class="max-w-3xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
-      <!-- Se llena dinámicamente desde app.js -->
-    </div>
+  <nav id="nav-categorias" class="sticky top-0 z-30 backdrop-blur border-b transition-colors">
+    <div id="categorias-container" class="max-w-4xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar"></div>
   </nav>
 
   <!-- Listado de Platos -->
-  <main class="max-w-3xl mx-auto px-4 mt-5">
-    <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <!-- Tarjetas de productos dinámicas desde app.js -->
-    </div>
+  <main class="max-w-4xl mx-auto px-4 mt-6">
+    <div id="menu-grid"></div>
   </main>
 
   <!-- Barra Flotante del Pedido -->
   <div id="barra-carrito" class="hidden fixed bottom-4 inset-x-0 z-40 px-4">
-    <div class="max-w-3xl mx-auto">
-      <button onclick="abrirModalCarrito()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 px-5 rounded-2xl shadow-xl flex items-center justify-between transition transform active:scale-98">
+    <div class="max-w-4xl mx-auto">
+      <button id="btn-ver-carrito" onclick="abrirModalCarrito()" class="w-full font-bold py-3.5 px-5 rounded-2xl shadow-xl flex items-center justify-between transition transform active:scale-98">
         <div class="flex items-center gap-3">
-          <span id="carrito-cantidad" class="bg-amber-800 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">0</span>
+          <span id="carrito-cantidad" class="text-xs font-extrabold px-2.5 py-1 rounded-lg">0</span>
           <span>Ver mi pedido</span>
         </div>
         <span id="carrito-total" class="text-lg font-extrabold">$0</span>
@@ -61,39 +51,37 @@
     </div>
   </div>
 
-  <!-- Modal Resumen y Envío a WhatsApp -->
-  <div id="modal-carrito" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+  <!-- Modal Resumen y Envío a Cocina -->
+  <div id="modal-carrito" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white text-stone-900 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex items-center justify-between border-b pb-3">
-        <h2 class="text-xl font-extrabold">Tu Pedido</h2>
+        <h2 class="text-xl font-extrabold">Confirmar Pedido</h2>
         <button onclick="cerrarModalCarrito()" class="text-stone-400 hover:text-stone-700 text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div id="lista-carrito" class="divide-y divide-stone-100 my-4 max-h-60 overflow-y-auto">
-        <!-- Items del carrito -->
-      </div>
+      <div id="lista-carrito" class="divide-y divide-stone-100 my-4 max-h-56 overflow-y-auto"></div>
 
       <!-- Datos del Cliente -->
       <div class="space-y-3 bg-stone-50 p-4 rounded-xl border border-stone-200 text-sm">
         <div>
           <label class="font-semibold block mb-1">¿Cómo recibes tu pedido?</label>
           <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full rounded-lg border-stone-300 border p-2 bg-white">
+            <option value="En mesa">Estoy en una mesa del local</option>
             <option value="Retiro en local">Retiro en el local</option>
             <option value="Delivery">Delivery a domicilio</option>
-            <option value="En mesa">Estoy en una mesa del local</option>
           </select>
         </div>
-        <div id="campo-direccion" class="hidden">
-          <label class="font-semibold block mb-1">Dirección o N° de Mesa</label>
-          <input id="cliente-direccion" type="text" placeholder="Ej: Calle Los Aromos 456, Depto 202" class="w-full rounded-lg border-stone-300 border p-2 bg-white">
+        <div id="campo-direccion">
+          <label id="label-direccion" class="font-semibold block mb-1">N° de Mesa</label>
+          <input id="cliente-direccion" type="text" placeholder="Ej: Mesa 4" class="w-full rounded-lg border-stone-300 border p-2 bg-white">
         </div>
         <div>
           <label class="font-semibold block mb-1">Tu Nombre</label>
           <input id="cliente-nombre" type="text" placeholder="Ej: Martín" class="w-full rounded-lg border-stone-300 border p-2 bg-white">
         </div>
         <div>
-          <label class="font-semibold block mb-1">Nota adicional (opcional)</label>
-          <input id="cliente-nota" type="text" placeholder="Ej: Sin cebolla, cubiertos desechables..." class="w-full rounded-lg border-stone-300 border p-2 bg-white">
+          <label class="font-semibold block mb-1">Nota para cocina (opcional)</label>
+          <input id="cliente-nota" type="text" placeholder="Ej: Sin cebolla, punto medio..." class="w-full rounded-lg border-stone-300 border p-2 bg-white">
         </div>
       </div>
 
@@ -102,17 +90,26 @@
         <span id="modal-total" class="text-amber-600">$0</span>
       </div>
 
-      <button onclick="enviarWhatsApp()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 text-base transition">
-        <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Pedido por WhatsApp
+      <button onclick="enviarPedidoACocina()" class="mt-4 w-full bg-stone-900 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 text-base transition">
+        <i class="fa-solid fa-paper-plane"></i> Enviar Pedido a Cocina
       </button>
     </div>
   </div>
 
-  <!-- Footer Marca Propia -->
-  <footer class="max-w-3xl mx-auto px-4 mt-12 text-center text-xs text-stone-400">
-    <p>Carta digital desarrollada por <strong class="text-stone-600">Martín Garriga</strong> • Sin comisiones por pedido</p>
+  <!-- Toast de Confirmación cuando se envía el pedido -->
+  <div id="toast-exito" class="hidden fixed top-16 inset-x-4 z-50 max-w-md mx-auto bg-emerald-600 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3">
+    <i class="fa-solid fa-circle-check text-2xl"></i>
+    <div>
+      <p class="font-extrabold text-sm">¡Pedido enviado a cocina!</p>
+      <p id="toast-numero" class="text-xs text-emerald-100">Orden #001 recibida en pantalla.</p>
+    </div>
+  </div>
+
+  <footer class="max-w-4xl mx-auto px-4 mt-12 text-center text-xs opacity-60">
+    <p>Carta digital desarrollada por <strong>Martín Garriga</strong> • Sistema en tiempo real</p>
   </footer>
 
+  <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
