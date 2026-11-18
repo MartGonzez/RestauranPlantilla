@@ -1,9 +1,16 @@
-/* Ocultar scrollbar en la barra horizontal de categorías */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE y Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes entrarSuave {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animar-entrada {
+  animation: entrarSuave 0.25s ease-out forwards;
 }
