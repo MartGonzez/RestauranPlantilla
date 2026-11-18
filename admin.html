@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | Carta Digital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen pb-16">
+
+  <!-- Navbar Superior -->
+  <header class="bg-stone-900 text-white px-4 py-4 shadow-md sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-amber-500 text-stone-950 flex items-center justify-center font-black">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-base sm:text-lg leading-tight">Panel de Administración</h1>
+          <p class="text-xs text-stone-400">Edita tu carta en tiempo real</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs">
+        <a href="index.html" target="_blank" class="bg-stone-800 hover:bg-stone-700 text-white font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-eye mr-1 text-amber-400"></i> Ver Carta
+        </a>
+        <a href="pedidos.html" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-fire-burner mr-1"></i> Cocina
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- Navegación por Pestañas -->
+    <div class="flex gap-2 border-b border-stone-200 pb-3">
+      <button onclick="cambiarTab('platos')" id="tab-platos" class="px-4 py-2 rounded-xl text-sm font-bold bg-stone-900 text-white transition">
+        <i class="fa-solid fa-utensils mr-1.5"></i> Platos y Menú
+      </button>
+      <button onclick="cambiarTab('local')" id="tab-local" class="px-4 py-2 rounded-xl text-sm font-bold bg-white text-stone-600 hover:bg-stone-200 transition">
+        <i class="fa-solid fa-store mr-1.5"></i> Datos del Restaurante
+      </button>
+      <button onclick="restaurarDemo()" class="ml-auto text-xs text-stone-400 hover:text-red-600 font-semibold px-3 py-2">
+        <i class="fa-solid fa-rotate-left mr-1"></i> Restaurar datos demo
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECCIÓN 1: GESTIÓN DE PLATOS               -->
+    <!-- ========================================== -->
+    <section id="sec-platos" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-extrabold text-stone-900">Catálogo de Platos</h2>
+          <p class="text-xs text-stone-500">Cambia fotos, precios o agrega nuevos productos a tu carta.</p>
+        </div>
+        <button onclick="abrirModalPlato()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 transition">
+          <i class="fa-solid fa-plus"></i> Nuevo Plato
+        </button>
+      </div>
+
+      <!-- Grid de Platos Editables -->
+      <div id="admin-platos-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Se llena desde admin.js -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECCIÓN 2: DATOS DEL RESTAURANTE           -->
+    <!-- ========================================== -->
+    <section id="sec-local" class="hidden">
+      <form onsubmit="guardarDatosLocal(event)" class="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-5 max-w-2xl">
+        <h2 class="text-xl font-extrabold text-stone-900 border-b pb-3">Información del Local</h2>
+
+        <!-- Portada / Banner con vista previa -->
+        <div>
+          <label class="block text-sm font-bold mb-2">Foto de Portada (Banner)</label>
+          <div class="relative h-44 w-full rounded-xl overflow-hidden bg-stone-200 border border-stone-300 mb-3">
+            <img id="preview-banner" src="" alt="Banner" class="w-full h-full object-cover">
+            <label for="input-banner-file" class="cursor-pointer absolute bottom-3 right-3 bg-stone-900/90 hover:bg-amber-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-2">
+              <i class="fa-solid fa-camera"></i> Subir nueva foto
+            </label>
+            <input id="input-banner-file" type="file" accept="image/*" onchange="procesarFotoBanner(event)" class="hidden">
+          </div>
+          <input id="local-banner-url" type="text" placeholder="O pega una URL de imagen..." oninput="document.getElementById('preview-banner').src = this.value" class="w-full text-xs rounded-lg border border-stone-300 p-2 bg-stone-50 text-stone-600">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-bold mb-1">Nombre del Restaurante</label>
+            <input id="local-nombre" type="text" required class="w-full rounded-xl border border-stone-300 p-2.5 text-sm">
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-bold mb-1">Descripción corta / Bajada</label>
+            <textarea id="local-descripcion" rows="2" required class="w-full rounded-xl border border-stone-300 p-2.5 text-sm"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold mb-1">Dirección</label>
+            <input id="local-direccion" type="text" required class="w-full rounded-xl border border-stone-300 p-2.5 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold mb-1">Horario de Atención</label>
+            <input id="local-horario" type="text" required class="w-full rounded-xl border border-stone-300 p-2.5 text-sm">
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full sm:w-auto bg-stone-900 hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios del Local
+          </button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL CREAR / EDITAR PLATO                 -->
+  <!-- ========================================== -->
+  <div id="modal-plato" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div class="flex items-center justify-between border-b pb-3 mb-4">
+        <h3 id="modal-plato-titulo" class="text-lg font-extrabold">Editar Plato</h3>
+        <button onclick="cerrarModalPlato()" class="text-stone-400 hover:text-stone-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="guardarPlato(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="plato-id">
+
+        <!-- Foto del plato -->
+        <div>
+          <label class="font-bold block mb-1.5">Foto del Plato (se optimiza a WebP automáticamente)</label>
+          <div class="flex items-center gap-4">
+            <img id="preview-plato-img" src="" alt="Vista previa" class="w-24 h-24 rounded-xl object-cover bg-stone-200 border border-stone-300 shrink-0">
+            <div class="flex-1 space-y-2">
+              <label for="input-plato-file" class="cursor-pointer inline-flex items-center gap-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3.5 py-2 rounded-xl text-xs transition">
+                <i class="fa-solid fa-upload"></i> Elegir foto desde equipo/celular
+              </label>
+              <input id="input-plato-file" type="file" accept="image/*" onchange="procesarFotoPlato(event)" class="hidden">
+              <input id="plato-imagen-url" type="text" placeholder="O pega URL de imagen..." oninput="document.getElementById('preview-plato-img').src = this.value" class="w-full text-xs rounded-lg border border-stone-300 p-2 bg-stone-50">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="sm:col-span-2">
+            <label class="font-bold block mb-1">Nombre del Plato</label>
+            <input id="plato-nombre" type="text" required placeholder="Ej: Mechada Luco" class="w-full rounded-xl border border-stone-300 p-2.5">
+          </div>
+
+          <div>
+            <label class="font-bold block mb-1">Categoría</label>
+            <input id="plato-categoria" type="text" list="lista-categorias" required placeholder="Ej: Sándwiches" class="w-full rounded-xl border border-stone-300 p-2.5">
+            <datalist id="lista-categorias">
+              <option value="Menú del Día">
+              <option value="Platos de Fondo">
+              <option value="Sándwiches">
+              <option value="Bebestibles">
+              <option value="Postres">
+            </datalist>
+          </div>
+
+          <div>
+            <label class="font-bold block mb-1">Precio (CLP)</label>
+            <input id="plato-precio" type="number" min="0" step="50" required placeholder="7500" class="w-full rounded-xl border border-stone-300 p-2.5">
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">Descripción / Ingredientes</label>
+          <textarea id="plato-descripcion" rows="2" required placeholder="Describe los ingredientes..." class="w-full rounded-xl border border-stone-300 p-2.5"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t">
+          <button type="button" onclick="cerrarModalPlato()" class="px-4 py-2.5 rounded-xl font-bold text-stone-600 hover:bg-stone-100">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl font-bold bg-stone-900 hover:bg-emerald-600 text-white transition">
+            Guardar Plato
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast de notificación -->
+  <div id="admin-toast" class="hidden fixed bottom-5 right-5 z-50 bg-stone-900 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-bold flex items-center gap-2.5">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+    <span id="admin-toast-msg">Cambios guardados</span>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
