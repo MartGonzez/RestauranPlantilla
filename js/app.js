@@ -407,6 +407,17 @@ function enviarPedidoACocina() {
   setTimeout(() => toast.classList.add("hidden"), 4000);
 }
 
+// Escuchar cambios desde admin.html en tiempo real
+canalPedidos.onmessage = (e) => {
+  if (e.data?.tipo === "MENU_ACTUALIZADO") {
+    CONFIG_LOCAL = obtenerConfigLocal();
+    PLATOS_DEMO = obtenerPlatos();
+    renderHeader();
+    renderCategorias();
+    renderMenu();
+  }
+};
+
 // Inicializar todo
 detectarVersionInicial();
 aplicarEstilosVersion();
